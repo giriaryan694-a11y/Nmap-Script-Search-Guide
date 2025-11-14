@@ -23,7 +23,7 @@
             position: relative;
         }
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 80px auto 40px auto;
             padding: 20px;
         }
@@ -67,6 +67,7 @@
         #content {
             margin-left: 0;
             transition: margin-left 0.3s;
+            padding: 10px;
         }
         #hamburger {
             position: fixed;
@@ -102,6 +103,38 @@
         }
         body.light table {
             background: #fff;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            #sidebar {
+                width: 200px;
+            }
+            #content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            .container {
+                margin: 120px 10px 40px 10px;
+            }
+        }
+        @media (max-width: 480px) {
+            #sidebar {
+                width: 180px;
+            }
+            button.theme-toggle {
+                top: 15px;
+                right: 10px;
+                padding: 8px 12px;
+            }
+            #hamburger {
+                top: 15px;
+                left: 10px;
+            }
+            .container {
+                margin: 140px 5px 40px 5px;
+                padding: 10px;
+            }
+            pre {font-size: 14px;}
         }
     </style>
 </head>
@@ -169,13 +202,7 @@ author = "Aryan" categories = {"safe"} portrule = function(host, port) return po
     function buildSidebar(){let sb=document.getElementById('sidebar');sb.innerHTML=`<h3>Navigation</h3><input id='searchBox' placeholder='Search...'><a href='#types'>Types of Scripts</a><a href='#searching'>Searching Scripts</a><a href='#categories'>Categories</a><a href='#writing'>Write Script</a>`;}
     function initSearch(){document.getElementById('searchBox').onkeyup=function(){let q=this.value.toLowerCase();document.querySelectorAll('pre').forEach(p=>{p.style.display=p.innerText.toLowerCase().includes(q)?'block':'none'});}} 
     function addCopyButtons(){document.querySelectorAll('pre').forEach(pre=>{let b=document.createElement('button');b.className='copy-btn';b.textContent='Copy';b.onclick=()=>navigator.clipboard.writeText(pre.innerText);pre.appendChild(b);});}
-
-    function toggleSidebar(){
-        let sb=document.getElementById('sidebar');
-        let content=document.getElementById('content');
-        if(sb.style.left==='0px'){sb.style.left='-250px';content.style.marginLeft='0';}
-        else{sb.style.left='0px';content.style.marginLeft='250px';}
-    }
+    function toggleSidebar(){let sb=document.getElementById('sidebar');let content=document.getElementById('content');if(sb.style.left==='0px'){sb.style.left='-250px';content.style.marginLeft='0';}else{sb.style.left='0px';if(window.innerWidth>768){content.style.marginLeft='250px';}else{content.style.marginLeft='0';}}}
 </script>
 
 </body>
