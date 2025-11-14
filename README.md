@@ -26,7 +26,7 @@ This repository is ready to be published as a GitHub Pages site. Steps:
 3. Go to **Settings > Pages**.
 4. Under **Source**, select `main` branch and root folder.
 5. Click **Save**.
-6. Your site will be available at `https://giriaryan694-a11y.github.io/Nmap-Script-Search-Guide/`
+6. Your site will be available at `https://<your-username>.github.io/<repo-name>/`
 
 ## Usage
 
@@ -43,3 +43,4 @@ Made by Aryan • Educational Notes on Nmap NSE
 ## License
 
 This project is for educational purposes. Do not use maliciously.
+
