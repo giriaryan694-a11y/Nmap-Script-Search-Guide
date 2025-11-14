@@ -1,0 +1,258 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nmap Script Search Guide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d0d0d;
+            color: #e6e6e6;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #00eaff;
+        }
+        pre {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #777;
+            font-size: 14px;
+        }
+            button.theme-toggle {
+            padding: 10px 15px;
+            background: #00eaff;
+            color: #000;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }body.light {
+        background-color: #f2f2f2;
+        color: #111;
+    }
+    body.light h1, body.light h2, body.light h3 {
+        color: #005577;
+    }
+    body.light pre {
+        background: #e0e0e0;
+        color: #000;
+    }
+    body.light table {
+        background: #fff;
+    }
+        /* Sidebar */
+    #sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 220px;
+        background: #111;
+        padding: 20px;
+        overflow-y: auto;
+    }
+    #sidebar a {
+        display:block;
+        margin:10px 0;
+        color:#00eaff;
+        text-decoration:none;
+    }
+    #content {
+        margin-left:240px;
+    }
+    /* Search */
+    #searchBox {
+        width:100%; padding:8px; margin:10px 0; border-radius:6px;
+    }
+    /* Copy Buttons */
+    .copy-btn {
+        float:right; margin-top:-35px; margin-right:10px; cursor:pointer;
+        background:#00eaff; border:none; padding:5px 8px; border-radius:4px;
+    }
+</style>
+
+</head>
+<body onload="loadTheme(); buildSidebar(); initSearch(); addCopyButtons();"="loadTheme()">
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+    <script>
+        function buildSidebar(){
+            let sb=document.createElement('div'); sb.id='sidebar';
+            sb.innerHTML=`<h3>Navigation</h3>
+                <input id='searchBox' placeholder='Search...'>
+                <a href='#types'>Types of Scripts</a>
+                <a href='#searching'>Searching Scripts</a>
+                <a href='#categories'>Categories</a>
+                <a href='#writing'>Write Script</a>`;
+            document.body.prepend(sb);
+        }
+        function initSearch(){
+            document.getElementById('searchBox').onkeyup=function(){
+                let q=this.value.toLowerCase();
+                document.querySelectorAll('pre').forEach(p=>{p.style.display=p.innerText.toLowerCase().includes(q)?'block':'none'});
+            };
+        }
+        function addCopyButtons(){
+            document.querySelectorAll('pre').forEach(pre=>{
+                let b=document.createElement('button'); b.className='copy-btn'; b.textContent='Copy';
+                b.onclick=()=>navigator.clipboard.writeText(pre.innerText);
+                pre.appendChild(b);
+            });
+        }
+        function setCookie(name, value, days) {
+            let d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = name + "=" + value + ";expires=" + d.toUTCString() + ";path=/";
+        }function getCookie(name) {
+        let cname = name + "=";
+        let decoded = decodeURIComponent(document.cookie);
+        let arr = decoded.split(';');
+        for (let i = 0; i < arr.length; i++) {
+            let c = arr[i].trim();
+            if (c.indexOf(cname) === 0) return c.substring(cname.length, c.length);
+        }
+        return "";
+    }
+
+    function loadTheme() {
+        let theme = getCookie("theme");
+        if (theme === "light") {
+            document.body.classList.add("light");
+        }
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle("light");
+        if (document.body.classList.contains("light")) {
+            setCookie("theme", "light", 365);
+        } else {
+            setCookie("theme", "dark", 365);
+        }
+    }
+</script>
+<div class="container">
+    <h1>Nmap NSE Script Search Guide</h1>
+    <p><strong>Introduction:</strong> Nmap's scripting engine (NSE) enhances scanning by adding automation, detection, exploitation, and enumeration capabilities. NLP scripts are categorized based on their purpose, enabling penetration testers and students to quickly select the right script for a target. This guide acts like clean notes for learning how to search and explore scripts efficiently.</p>
+
+    <h2>Types of Nmap Scripts</h2>
+    <table style="width:100%; border-collapse: collapse; background:#1a1a1a;">
+        <tr style="border-bottom:1px solid #444;">
+            <th style="padding:10px; text-align:left; color:#00eaff;">Type</th>
+            <th style="padding:10px; text-align:left; color:#00eaff;">Description</th>
+        </tr>
+        <tr style="border-bottom:1px solid #333;">
+            <td style="padding:10px;">Discovery</td>
+            <td style="padding:10px;">Used for identifying hosts, services, and basic network info. Helps in early recon.</td>
+        </tr>
+        <tr style="border-bottom:1px solid #333;">
+            <td style="padding:10px;">Vulnerability</td>
+            <td style="padding:10px;">Checks for known vulnerabilities, misconfigurations, outdated versions, etc.</td>
+        </tr>
+        <tr>
+            <td style="padding:10px;">Brute</td>
+            <td style="padding:10px;">Attempts login or password brute force attack on various services.</td>
+        </tr>
+    </table>
+    
+    <p>This page provides simple and powerful ways to search, filter, and explore <strong>Nmap NSE scripts</strong> using <code>cat</code> and <code>grep</code>. Ideal for penetration testers, researchers, and students learning advanced recon techniques.</p>
+
+    <div class="section">
+        <h2>1. View All Script Names</h2>
+        <pre><code>ls /usr/share/nmap/scripts/</code></pre>
+
+        <h3>Check script.db for full list:</h3>
+        <pre><code>cat /usr/share/nmap/scripts/script.db</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>2. Search Scripts by Type (Category)</h2>
+        <h3>Discovery scripts</h3>
+        <pre><code>grep -R "categories = .*discovery" /usr/share/nmap/scripts/</code></pre>
+
+        <h3>Vulnerability scripts</h3>
+        <pre><code>grep -R "vuln" /usr/share/nmap/scripts/</code></pre>
+
+        <h3>Brute force scripts</h3>
+        <pre><code>grep -R "brute" /usr/share/nmap/scripts/</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>3. Using cat + grep Together</h2>
+        <h3>Search inside script.db</h3>
+        <pre><code>cat /usr/share/nmap/scripts/script.db | grep categories</code></pre>
+
+        <h3>Search for vuln scripts</h3>
+        <pre><code>cat /usr/share/nmap/scripts/script.db | grep "vuln"</code></pre>
+
+        <h3>Search for default scripts</h3>
+        <pre><code>cat /usr/share/nmap/scripts/script.db | grep "default"</code></pre>
+    </div>
+
+    <div class="section">
+        <h2>4. Pro-Level Filters</h2>
+        <h3>SMB-related scripts</h3>
+        <pre><code>grep -Ri "smb" /usr/share/nmap/scripts/</code></pre>
+
+        <h3>SQL Injection scripts</h3>
+        <pre><code>grep -Ri "sql" /usr/share/nmap/scripts/</code></pre>
+
+        <h3>SSL/TLS scripts</h3>
+        <pre><code>grep -Ri "ssl" /usr/share/nmap/scripts/</code></pre>
+    </div>
+
+    <h2>How NSE Works Internally</h2>
+    <p>Nmap's NSE engine loads scripts written in Lua, assigns them categories, and runs them during specific scan phases. Scripts interact with targets using Nmap libraries that allow networking, protocol parsing, brute forcing, and more.</p>
+
+    <h3>Main Components:</h3>
+    <ul>
+        <li><strong>Script:</strong> Written in Lua and stored in <code>/usr/share/nmap/scripts/</code>.</li>
+        <li><strong>Libraries:</strong> Provide reusable functions for SMB, HTTP, DNS, etc.</li>
+        <li><strong>Categories:</strong> Define when and how scripts run.</li>
+    </ul>
+
+    <h2>Common NSE Categories</h2>
+    <ul>
+        <li><strong>safe</strong> – Non-intrusive scripts.</li>
+        <li><strong>intrusive</strong> – Might affect target stability.</li>
+        <li><strong>vuln</strong> – Checks for vulnerabilities.</li>
+        <li><strong>auth</strong> – Authentication-related checks.</li>
+        <li><strong>default</strong> – Runs in -sC scan.</li>
+        <li><strong>brute</strong> – Performs brute force attacks.</li>
+        <li><strong>discovery</strong> – Finds hosts and services.</li>
+    </ul>
+
+    <h2>Create Your First NSE Script</h2>
+    <pre><code>description = "Simple NSE Script"
+
+author = "Aryan"
+
+categories = {"safe"}
+
+portrule = function(host, port) return port.protocol == "tcp" and port.state == "open" end
+
+action = function(host, port) return "Test scan on " .. host.ip end</code></pre>
+
+<div class="footer">
+        <p>Made by Aryan • Educational Notes on Nmap NSE</p>
+    </div>
+        <p>Made for cybersecurity learners exploring Nmap NSE world.</p>
+    </div>
+</div>
+
+</body>
+  </html>
